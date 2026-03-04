@@ -71,7 +71,7 @@ class User(BaseModel):
 class UserResponse(BaseModel):
     user_id: str
     email: str
-    name: str
+    name: Optional[str] = None
     role: str
     company_id: Optional[str] = None
     picture: Optional[str] = None
