@@ -1,0 +1,136 @@
+{
+  "typography": {
+    "font_family": {
+      "headings": "Outfit, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-6xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
+      "h3": "text-2xl font-medium",
+      "p": "text-base leading-relaxed text-muted-foreground",
+      "small": "text-sm font-medium text-muted-foreground"
+    }
+  },
+  "colors": {
+    "theme_mode": "dark",
+    "palette": {
+      "background": {
+        "default": "#020408",
+        "paper": "#0D1117",
+        "subtle": "#161B22"
+      },
+      "primary": {
+        "main": "#4BACC6",
+        "light": "#7DD3E8",
+        "dark": "#2C8A9E",
+        "foreground": "#000000"
+      },
+      "secondary": {
+        "main": "#FFCC00",
+        "foreground": "#000000"
+      },
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "#94A3B8",
+        "muted": "#64748B"
+      },
+      "border": {
+        "default": "#1E293B",
+        "active": "#4BACC6"
+      },
+      "status": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "info": "#3B82F6"
+      }
+    },
+    "gradients": {
+      "hero": "radial-gradient(circle at top center, rgba(75, 172, 198, 0.15), transparent 70%)",
+      "card_hover": "linear-gradient(180deg, rgba(75, 172, 198, 0.05) 0%, transparent 100%)",
+      "text_highlight": "linear-gradient(90deg, #FFFFFF, #94A3B8)"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "default": "backdrop-blur-xl bg-background/60 border border-white/10",
+      "heavy": "backdrop-blur-2xl bg-black/40 border border-white/5",
+      "card": "bg-[#0D1117]/80 backdrop-blur-md border border-white/5 hover:border-[#4BACC6]/30 transition-all duration-300"
+    },
+    "shadows": {
+      "glow": "0 0 20px -5px rgba(75, 172, 198, 0.3)",
+      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15)"
+    },
+    "borders": {
+      "radius": "rounded-xl",
+      "width": "border"
+    }
+  },
+  "layout_strategy": {
+    "dashboard": {
+      "type": "bento_grid",
+      "container": "max-w-[1600px] mx-auto p-6 md:p-8",
+      "grid_cols": "grid-cols-1 md:grid-cols-12 gap-6",
+      "sidebar_width": "w-64"
+    },
+    "marketing": {
+      "hero_height": "min-h-[90vh]",
+      "section_spacing": "py-24 md:py-32",
+      "container": "container mx-auto px-4 md:px-6"
+    }
+  },
+  "components": {
+    "Button": {
+      "path": "@/components/ui/button",
+      "styles": {
+        "primary": "bg-[#4BACC6] text-black hover:bg-[#7DD3E8] shadow-[0_0_15px_rgba(75,172,198,0.3)] font-semibold rounded-lg px-6",
+        "outline": "border-[#4BACC6] text-[#4BACC6] hover:bg-[#4BACC6]/10 bg-transparent"
+      }
+    },
+    "Card": {
+      "path": "@/components/ui/card",
+      "styles": "bg-[#0D1117] border-white/5 hover:border-[#4BACC6]/40 transition-colors duration-300"
+    },
+    "Input": {
+      "path": "@/components/ui/input",
+      "styles": "bg-white/5 border-white/10 focus:border-[#4BACC6] focus:ring-[#4BACC6]/20 h-11"
+    }
+  },
+  "image_urls": {
+    "auth_background": {
+      "url": "https://images.pexels.com/photos/28428592/pexels-photo-28428592.jpeg",
+      "desc": "3D Abstract Cube for Login Side Panel"
+    },
+    "hero_abstract": {
+      "url": "https://images.unsplash.com/photo-1642849335830-087ebef0beac",
+      "desc": "Abstract Spiral Structure for Landing Page Hero"
+    },
+    "team_placeholder": {
+      "url": "https://images.unsplash.com/photo-1758518731468-98e90ffd7430",
+      "desc": "Professional Business Team"
+    },
+    "logo_placeholder": {
+      "url": "https://via.placeholder.com/150x50?text=HiBotics+AI",
+      "desc": "Temporary Logo Placeholder"
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. THEME: Default to DARK mode. Use #020408 as the main background. Use #4BACC6 (Cyan) for primary actions and accents.",
+    "2. FONT: Import 'Outfit' from Google Fonts for Headings and 'Inter' for body. Do not use default sans.",
+    "3. DASHBOARD: Implement a Sidebar Layout. The main content area should use a Bento Grid layout for KPIs.",
+    "4. GLASSMORPHISM: Use the 'glassmorphism.card' style for all dashboard widgets. Ensure text contrast is high.",
+    "5. CHARTS: Use Recharts. Style the lines/bars with #4BACC6 and #FFCC00. Hide grid lines or make them very subtle (#FFFFFF/5).",
+    "6. TABLES: Use Shadcn Table. Remove vertical borders. Use zebra striping with extremely low opacity (bg-white/2).",
+    "7. WHITE-LABEL: The sidebar logo and primary color might need to be overridden by user settings in the future. For now, hardcode HiBotics defaults but keep CSS variables ready.",
+    "8. ANIMATION: Use Framer Motion for page transitions (opacity + y-axis slide). Add hover scales (1.02) to all interactive cards."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop' - do not use generic centered layouts.",
+    "Use 2x more padding than you think is necessary.",
+    "Never use pure black (#000000) for backgrounds; use #020408 or #0D1117.",
+    "Interactive elements must have a defined hover state.",
+    "All functional elements must have data-testid attributes."
+  ]
+}
