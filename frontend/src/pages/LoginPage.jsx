@@ -80,10 +80,11 @@ const LoginPage = () => {
         <div className="relative z-10 flex flex-col justify-center px-12 lg:px-20">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
-                <span className="text-2xl font-bold text-black">H</span>
-              </div>
-              <span className="text-3xl font-bold font-['Outfit']">HiBotics AI</span>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png"
+                alt="HiBotics AI"
+                className="h-14 w-auto"
+              />
             </div>
             
             <h1 className="text-4xl lg:text-5xl font-bold font-['Outfit'] leading-tight">
@@ -137,11 +138,12 @@ const LoginPage = () => {
           </div>
           
           {/* Mobile Logo */}
-          <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-xl font-bold text-black">H</span>
-            </div>
-            <span className="text-2xl font-bold font-['Outfit']">HiBotics AI</span>
+          <div className="flex lg:hidden items-center justify-center mb-8">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png"
+              alt="HiBotics AI"
+              className="h-10 w-auto"
+            />
           </div>
           
           <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-xl">

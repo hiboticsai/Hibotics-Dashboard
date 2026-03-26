@@ -13,6 +13,8 @@ export const useTenant = () => {
   return context;
 };
 
+const HIBOTICS_LOGO = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png';
+
 export const TenantProvider = ({ children }) => {
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -38,9 +40,9 @@ export const TenantProvider = ({ children }) => {
       // Apply white-label branding
       applyBranding({
         brandName: companyData.brand_name || companyData.company_name,
-        brandLogoUrl: companyData.brand_logo_url,
-        primaryColor: companyData.primary_color || '#4BACC6',
-        accentColor: companyData.accent_color || '#FFCC00',
+        brandLogoUrl: companyData.brand_logo_url || HIBOTICS_LOGO,
+        primaryColor: companyData.primary_color || '#00F5D4',
+        accentColor: companyData.accent_color || '#00F5D4',
         showPoweredBy: companyData.show_powered_by ?? true
       });
       
@@ -76,9 +78,9 @@ export const TenantProvider = ({ children }) => {
       // Apply white-label branding
       applyBranding({
         brandName: companyData.brand_name || companyData.company_name,
-        brandLogoUrl: companyData.brand_logo_url,
-        primaryColor: companyData.primary_color || '#4BACC6',
-        accentColor: companyData.accent_color || '#FFCC00',
+        brandLogoUrl: companyData.brand_logo_url || HIBOTICS_LOGO,
+        primaryColor: companyData.primary_color || '#00F5D4',
+        accentColor: companyData.accent_color || '#00F5D4',
         showPoweredBy: companyData.show_powered_by ?? true
       });
       
@@ -96,9 +98,9 @@ export const TenantProvider = ({ children }) => {
     // Reset to default branding
     applyBranding({
       brandName: 'HiBotics AI',
-      brandLogoUrl: null,
-      primaryColor: '#4BACC6',
-      accentColor: '#FFCC00',
+      brandLogoUrl: HIBOTICS_LOGO,
+      primaryColor: '#00F5D4',
+      accentColor: '#00F5D4',
       showPoweredBy: true
     });
   }, [applyBranding]);

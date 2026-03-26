@@ -22,9 +22,9 @@ export const ThemeProvider = ({ children, defaultTheme = 'dark' }) => {
   // White-label branding state
   const [branding, setBranding] = useState({
     brandName: 'HiBotics AI',
-    brandLogoUrl: null,
-    primaryColor: '#4BACC6',
-    accentColor: '#FFCC00',
+    brandLogoUrl: 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png',
+    primaryColor: '#00F5D4',
+    accentColor: '#00F5D4',
     showPoweredBy: true
   });
 

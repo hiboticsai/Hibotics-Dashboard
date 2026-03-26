@@ -13,9 +13,9 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 189 55% 53%;
+    --primary: 168 100% 48%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 45 100% 50%;
+    --secondary: 168 100% 48%;
     --secondary-foreground: 0 0% 0%;
     --muted: 210 20% 96%;
     --muted-foreground: 215 16% 47%;
@@ -25,19 +25,19 @@
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 189 55% 53%;
-    --chart-1: 189 55% 53%;
-    --chart-2: 45 100% 50%;
+    --ring: 168 100% 48%;
+    --chart-1: 168 100% 48%;
+    --chart-2: 168 80% 60%;
     --chart-3: 160 60% 45%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.75rem;
     
     /* HiBotics Brand Colors */
-    --hibotics-cyan: 189 55% 53%;
-    --hibotics-cyan-light: 189 70% 70%;
-    --hibotics-cyan-dark: 189 55% 40%;
-    --hibotics-gold: 45 100% 50%;
+    --hibotics-cyan: 168 100% 48%;
+    --hibotics-cyan-light: 168 100% 65%;
+    --hibotics-cyan-dark: 168 100% 35%;
+    --hibotics-gold: 168 100% 48%;
     --hibotics-success: 160 84% 39%;
     --hibotics-warning: 38 92% 50%;
     --hibotics-error: 0 84% 60%;
@@ -51,9 +51,9 @@
     --card-foreground: 0 0% 98%;
     --popover: 220 17% 7%;
     --popover-foreground: 0 0% 98%;
-    --primary: 189 55% 53%;
+    --primary: 168 100% 48%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 45 100% 50%;
+    --secondary: 168 100% 48%;
     --secondary-foreground: 0 0% 0%;
     --muted: 220 14% 14%;
     --muted-foreground: 215 20% 65%;
@@ -63,9 +63,9 @@
     --destructive-foreground: 0 0% 98%;
     --border: 215 28% 17%;
     --input: 215 28% 17%;
-    --ring: 189 55% 53%;
-    --chart-1: 189 55% 53%;
-    --chart-2: 45 100% 50%;
+    --ring: 168 100% 48%;
+    --chart-1: 168 100% 48%;
+    --chart-2: 168 80% 60%;
     --chart-3: 160 60% 45%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
@@ -117,14 +117,14 @@
   
   /* Button Styles */
   .btn-primary {
-    @apply bg-[#4BACC6] text-black font-semibold rounded-lg px-6 py-2.5 
-           hover:bg-[#7DD3E8] transition-all duration-200 
-           shadow-[0_0_15px_rgba(75,172,198,0.3)] hover:shadow-[0_0_20px_rgba(75,172,198,0.5)];
+    @apply bg-[#00F5D4] text-black font-semibold rounded-lg px-6 py-2.5 
+           hover:bg-[#33F7DD] transition-all duration-200 
+           shadow-[0_0_15px_rgba(0,245,212,0.3)] hover:shadow-[0_0_20px_rgba(0,245,212,0.5)];
   }
   
   .btn-outline {
-    @apply border border-[#4BACC6] text-[#4BACC6] bg-transparent rounded-lg px-6 py-2.5
-           hover:bg-[#4BACC6]/10 transition-all duration-200;
+    @apply border border-[#00F5D4] text-[#00F5D4] bg-transparent rounded-lg px-6 py-2.5
+           hover:bg-[#00F5D4]/10 transition-all duration-200;
   }
   
   /* Input Styles */
