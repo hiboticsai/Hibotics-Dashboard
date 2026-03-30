@@ -284,6 +284,127 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user: UserResponse
 
+# ================== ONBOARDING MODELS ==================
+
+# Discovery Questions (static list)
+DISCOVERY_QUESTIONS = [
+    {
+        "key": "missed_calls_frequency",
+        "question": "How often are you unable to answer calls during busy periods?",
+        "type": "select",
+        "options": ["Rarely", "Sometimes", "Often", "Very Often", "Almost Always"]
+    },
+    {
+        "key": "lost_revenue_impact",
+        "question": "Do missed calls or delayed responses result in lost bookings or revenue for your business?",
+        "type": "select",
+        "options": ["No", "Rarely", "Sometimes", "Frequently", "Yes, significantly"]
+    },
+    {
+        "key": "current_call_handling",
+        "question": "What currently happens when a customer calls and you can't answer?",
+        "type": "textarea"
+    },
+    {
+        "key": "time_spent_on_calls",
+        "question": "How much time do you or your team spend handling calls, bookings, and admin each day?",
+        "type": "select",
+        "options": ["Less than 1 hour", "1-2 hours", "2-4 hours", "4-6 hours", "More than 6 hours"]
+    },
+    {
+        "key": "instant_response_impact",
+        "question": "If every enquiry was answered instantly, how would that impact your business?",
+        "type": "textarea"
+    }
+]
+
+class OnboardingDiscoveryAnswer(BaseModel):
+    question_key: str
+    answer: str
+
+class OnboardingVoiceSelection(BaseModel):
+    voice_id: str
+    voice_name: str
+    preview_url: Optional[str] = None
+
+class OnboardingSubmissionCreate(BaseModel):
+    # Step 1: Account Info (optional if already logged in)
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+    
+    # Step 2: Business Profile
+    business_name: str
+    industry: str
+    business_size: str  # solo, 2-5, 6-10, 11-25, 26-50, 50+
+    
+    # Step 3: Website Info
+    website_url: Optional[str] = None
+    facebook_url: Optional[str] = None
+    instagram_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    
+    # Step 4: Discovery Answers
+    discovery_answers: List[OnboardingDiscoveryAnswer]
+    
+    # Step 5: Receptionist Preferences
+    business_hours: Optional[str] = None  # e.g., "Mon-Fri 9am-5pm"
+    call_handling_instructions: Optional[str] = None
+    services_offered: Optional[str] = None
+    booking_link: Optional[str] = None
+    
+    # Step 6: Voice Selection
+    selected_voice: OnboardingVoiceSelection
+
+class OnboardingSubmission(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    submission_id: str
+    user_id: Optional[str] = None
+    company_id: Optional[str] = None
+    
+    # Account Info
+    name: str
+    email: str
+    
+    # Business Profile
+    business_name: str
+    industry: str
+    business_size: str
+    
+    # Website Info
+    website_url: Optional[str] = None
+    facebook_url: Optional[str] = None
+    instagram_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    
+    # Discovery Answers stored separately
+    
+    # Receptionist Preferences
+    business_hours: Optional[str] = None
+    call_handling_instructions: Optional[str] = None
+    services_offered: Optional[str] = None
+    booking_link: Optional[str] = None
+    
+    # Voice Selection
+    selected_voice_id: str
+    selected_voice_name: str
+    selected_voice_preview_url: Optional[str] = None
+    
+    # Status tracking
+    status: str = "pending"  # pending, reviewed, setup_complete, rejected
+    admin_notes: Optional[str] = None
+    reviewed_by: Optional[str] = None
+    reviewed_at: Optional[str] = None
+    
+    created_at: str
+
+class OnboardingSubmissionUpdate(BaseModel):
+    status: Optional[str] = None
+    admin_notes: Optional[str] = None
+
+class AdminNoteCreate(BaseModel):
+    note: str
+
 # ================== AUTH UTILITIES ==================
 
 def hash_password(password: str) -> str:
@@ -327,7 +448,7 @@ async def get_current_user(request: Request) -> dict:
     try:
         payload = decode_jwt_token(session_token)
         return payload
-    except:
+    except Exception:
         pass
     
     # Check if it's an Emergent session token
@@ -1247,6 +1368,395 @@ Powered by HiBotics AI
         media_type="text/plain",
         headers={"Content-Disposition": f"attachment; filename=hibotics_report_{report_type}_{datetime.now().strftime('%Y%m%d')}.txt"}
     )
+
+# ================== ONBOARDING ROUTES ==================
+
+# Sample voices for when ElevenLabs API is not available
+SAMPLE_VOICES = [
+    {
+        "voice_id": "21m00Tcm4TlvDq8ikWAM",
+        "name": "Rachel",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "female", "description": "calm"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/21m00Tcm4TlvDq8ikWAM/df6788f9-5c96-470d-8571-63c85f9e5fae.mp3"
+    },
+    {
+        "voice_id": "29vD33N1CtxCmqQRPOHJ",
+        "name": "Drew",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "middle-aged", "gender": "male", "description": "well-rounded"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/29vD33N1CtxCmqQRPOHJ/b26e2a91-7c9f-41c0-ab9e-e3a87b26d83f.mp3"
+    },
+    {
+        "voice_id": "EXAVITQu4vr4xnSDxMaL",
+        "name": "Sarah",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "female", "description": "soft"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3"
+    },
+    {
+        "voice_id": "ErXwobaYiN019PkySvjV",
+        "name": "Antoni",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "male", "description": "well-rounded"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/ErXwobaYiN019PkySvjV/38d8f8f0-1122-4333-b323-0b87478d506a.mp3"
+    },
+    {
+        "voice_id": "MF3mGyEYCl7XYWbV9V6O",
+        "name": "Elli",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "female", "description": "emotional"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/MF3mGyEYCl7XYWbV9V6O/2eb1bb15-66ff-4c43-b756-80ea0e7e2c5d.mp3"
+    },
+    {
+        "voice_id": "TxGEqnHWrfWFTfGW9XjX",
+        "name": "Josh",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "male", "description": "deep"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/TxGEqnHWrfWFTfGW9XjX/c6431a82-f7d2-4905-b8a4-a631960633d6.mp3"
+    },
+    {
+        "voice_id": "VR6AewLTigWG4xSOukaG",
+        "name": "Arnold",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "middle-aged", "gender": "male", "description": "crisp"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/VR6AewLTigWG4xSOukaG/3a48b4ad-e272-4957-be5d-c07b5f9b18ba.mp3"
+    },
+    {
+        "voice_id": "pNInz6obpgDQGcFmaJgB",
+        "name": "Adam",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "middle-aged", "gender": "male", "description": "deep"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/pNInz6obpgDQGcFmaJgB/e0b45450-78db-49b9-aaa4-d5358a6871bd.mp3"
+    },
+    {
+        "voice_id": "yoZ06aMxZJJ28mfd3POQ",
+        "name": "Sam",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "male", "description": "raspy"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/yoZ06aMxZJJ28mfd3POQ/b017ad02-8d82-4640-a435-5d5eaa899e7c.mp3"
+    },
+    {
+        "voice_id": "jBpfuIE2acCO8z3wKNLl",
+        "name": "Gigi",
+        "category": "premade",
+        "labels": {"accent": "American", "age": "young", "gender": "female", "description": "childlish"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/jBpfuIE2acCO8z3wKNLl/3a7e4339-78b8-45d7-a2e3-65f9f3f56a28.mp3"
+    },
+    {
+        "voice_id": "oWAxZDx7w5VEj9dCyTzz",
+        "name": "Grace",
+        "category": "premade",
+        "labels": {"accent": "American-Southern", "age": "young", "gender": "female", "description": "gentle"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/oWAxZDx7w5VEj9dCyTzz/84a36d1c-e182-41a8-8c55-dbdd15cd6e72.mp3"
+    },
+    {
+        "voice_id": "onwK4e9ZLuTAKqWW03F9",
+        "name": "Daniel",
+        "category": "premade",
+        "labels": {"accent": "British", "age": "middle-aged", "gender": "male", "description": "authoritative"},
+        "preview_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/onwK4e9ZLuTAKqWW03F9/7eee0236-1a72-4b86-b303-5dcadc007c53.mp3"
+    }
+]
+
+@api_router.get("/onboarding/discovery-questions")
+async def get_discovery_questions():
+    """Get the list of discovery questions for the onboarding flow"""
+    return DISCOVERY_QUESTIONS
+
+@api_router.get("/onboarding/voices")
+async def get_available_voices():
+    """Get available ElevenLabs voices - returns sample voices if API not configured"""
+    elevenlabs_key = os.environ.get('ELEVENLABS_API_KEY')
+    
+    if elevenlabs_key:
+        try:
+            from elevenlabs import ElevenLabs
+            client = ElevenLabs(api_key=elevenlabs_key)
+            voices_response = client.voices.get_all()
+            
+            formatted_voices = []
+            for voice in voices_response.voices:
+                formatted_voices.append({
+                    "voice_id": voice.voice_id,
+                    "name": voice.name,
+                    "category": voice.category or "premade",
+                    "labels": voice.labels or {},
+                    "preview_url": voice.preview_url or ""
+                })
+            return formatted_voices
+        except Exception as e:
+            logger.error(f"Error fetching voices from ElevenLabs: {e}")
+            # Fall back to sample voices
+            return SAMPLE_VOICES
+    
+    # Return sample voices when no API key is configured
+    logger.info("ElevenLabs API key not configured, returning sample voices")
+    return SAMPLE_VOICES
+
+@api_router.get("/onboarding/voice-preview/{voice_id}")
+async def get_voice_preview(voice_id: str, text: str = "Hello! Thank you for calling. How may I assist you today?"):
+    """Generate a voice preview using ElevenLabs or return sample preview"""
+    elevenlabs_key = os.environ.get('ELEVENLABS_API_KEY')
+    
+    # Check if we have a sample voice with this ID
+    sample_voice = next((v for v in SAMPLE_VOICES if v["voice_id"] == voice_id), None)
+    
+    if elevenlabs_key:
+        try:
+            from elevenlabs import ElevenLabs
+            client = ElevenLabs(api_key=elevenlabs_key)
+            
+            audio_generator = client.text_to_speech.convert(
+                text=text,
+                voice_id=voice_id,
+                model_id="eleven_multilingual_v2"
+            )
+            
+            audio_data = b""
+            for chunk in audio_generator:
+                audio_data += chunk
+            
+            return StreamingResponse(
+                BytesIO(audio_data),
+                media_type="audio/mpeg",
+                headers={"Content-Disposition": f"inline; filename=preview_{voice_id}.mp3"}
+            )
+        except Exception as e:
+            logger.error(f"Error generating voice preview: {e}")
+            # Fall through to use sample preview URL if available
+    
+    # Use sample preview URL if available
+    if sample_voice and sample_voice.get("preview_url"):
+        # Redirect to the sample preview URL
+        return {"redirect_url": sample_voice["preview_url"]}
+    
+    raise HTTPException(status_code=404, detail="Voice preview not available")
+
+@api_router.post("/onboarding/submit")
+async def submit_onboarding(submission_data: OnboardingSubmissionCreate, request: Request):
+    """Submit onboarding data - creates user account if needed"""
+    
+    user_id = None
+    existing_user = None
+    
+    # Check if user is already authenticated
+    try:
+        auth_header = request.headers.get("Authorization")
+        session_token = request.cookies.get("session_token")
+        
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            payload = decode_jwt_token(token)
+            existing_user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
+        elif session_token:
+            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+            if session:
+                existing_user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    except Exception:
+        pass
+    
+    if existing_user:
+        user_id = existing_user["user_id"]
+        name = existing_user.get("name") or submission_data.name or "User"
+        email = existing_user.get("email")
+    else:
+        # Create new user account
+        if not submission_data.email or not submission_data.password:
+            raise HTTPException(status_code=400, detail="Email and password required for new accounts")
+        
+        # Check if email exists
+        existing = await db.users.find_one({"email": submission_data.email}, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered. Please login first.")
+        
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        name = submission_data.name or "User"
+        email = submission_data.email
+        
+        user_doc = {
+            "user_id": user_id,
+            "email": email,
+            "name": name,
+            "password_hash": hash_password(submission_data.password),
+            "role": "client",
+            "company_id": None,  # Will be assigned after admin reviews
+            "picture": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.users.insert_one(user_doc)
+    
+    # Create submission record
+    submission_id = f"onb_{uuid.uuid4().hex[:12]}"
+    
+    submission_doc = {
+        "submission_id": submission_id,
+        "user_id": user_id,
+        "company_id": None,  # Will be assigned after admin sets up company
+        
+        # Account Info
+        "name": name,
+        "email": email,
+        
+        # Business Profile
+        "business_name": submission_data.business_name,
+        "industry": submission_data.industry,
+        "business_size": submission_data.business_size,
+        
+        # Website Info
+        "website_url": submission_data.website_url,
+        "facebook_url": submission_data.facebook_url,
+        "instagram_url": submission_data.instagram_url,
+        "linkedin_url": submission_data.linkedin_url,
+        
+        # Receptionist Preferences
+        "business_hours": submission_data.business_hours,
+        "call_handling_instructions": submission_data.call_handling_instructions,
+        "services_offered": submission_data.services_offered,
+        "booking_link": submission_data.booking_link,
+        
+        # Voice Selection
+        "selected_voice_id": submission_data.selected_voice.voice_id,
+        "selected_voice_name": submission_data.selected_voice.voice_name,
+        "selected_voice_preview_url": submission_data.selected_voice.preview_url,
+        
+        # Status
+        "status": "pending",
+        "admin_notes": None,
+        "reviewed_by": None,
+        "reviewed_at": None,
+        
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.onboarding_submissions.insert_one(submission_doc)
+    
+    # Store discovery answers separately
+    for answer in submission_data.discovery_answers:
+        answer_doc = {
+            "answer_id": f"ans_{uuid.uuid4().hex[:12]}",
+            "submission_id": submission_id,
+            "question_key": answer.question_key,
+            "answer": answer.answer,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.onboarding_discovery_answers.insert_one(answer_doc)
+    
+    # Generate JWT token for new users
+    token = None
+    if not existing_user:
+        token = create_jwt_token(user_id, email, "client", None)
+    
+    return {
+        "submission_id": submission_id,
+        "message": "Onboarding submitted successfully! Our team will review and set up your AI receptionist.",
+        "access_token": token
+    }
+
+@api_router.get("/onboarding/submissions", response_model=List[OnboardingSubmission])
+async def list_onboarding_submissions(
+    status: Optional[str] = None,
+    user: dict = Depends(require_admin)
+):
+    """Admin: List all onboarding submissions"""
+    query = {}
+    if status:
+        query["status"] = status
+    
+    submissions = await db.onboarding_submissions.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return submissions
+
+@api_router.get("/onboarding/submissions/{submission_id}")
+async def get_onboarding_submission(submission_id: str, user: dict = Depends(require_admin)):
+    """Admin: Get a specific onboarding submission with discovery answers"""
+    submission = await db.onboarding_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    # Get discovery answers
+    answers = await db.onboarding_discovery_answers.find({"submission_id": submission_id}, {"_id": 0}).to_list(100)
+    
+    # Map answers to question keys
+    answers_map = {a["question_key"]: a["answer"] for a in answers}
+    
+    return {
+        **submission,
+        "discovery_answers": answers_map,
+        "discovery_questions": DISCOVERY_QUESTIONS
+    }
+
+@api_router.put("/onboarding/submissions/{submission_id}")
+async def update_onboarding_submission(
+    submission_id: str,
+    update_data: OnboardingSubmissionUpdate,
+    user: dict = Depends(require_admin)
+):
+    """Admin: Update submission status and notes"""
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # Add reviewer info
+    update_dict["reviewed_by"] = user.get("user_id")
+    update_dict["reviewed_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.onboarding_submissions.update_one(
+        {"submission_id": submission_id},
+        {"$set": update_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    return await db.onboarding_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
+
+@api_router.post("/onboarding/submissions/{submission_id}/notes")
+async def add_admin_note(
+    submission_id: str,
+    note_data: AdminNoteCreate,
+    user: dict = Depends(require_admin)
+):
+    """Admin: Add a note to a submission"""
+    submission = await db.onboarding_submissions.find_one({"submission_id": submission_id}, {"_id": 0})
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    # Append note with timestamp
+    existing_notes = submission.get("admin_notes") or ""
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    admin_name = user.get("name", user.get("email", "Admin"))
+    new_note = f"\n[{timestamp}] {admin_name}: {note_data.note}"
+    
+    updated_notes = existing_notes + new_note
+    
+    await db.onboarding_submissions.update_one(
+        {"submission_id": submission_id},
+        {"$set": {
+            "admin_notes": updated_notes.strip(),
+            "reviewed_by": user.get("user_id"),
+            "reviewed_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": "Note added", "admin_notes": updated_notes.strip()}
+
+@api_router.get("/onboarding/stats")
+async def get_onboarding_stats(user: dict = Depends(require_admin)):
+    """Admin: Get onboarding statistics"""
+    total = await db.onboarding_submissions.count_documents({})
+    pending = await db.onboarding_submissions.count_documents({"status": "pending"})
+    reviewed = await db.onboarding_submissions.count_documents({"status": "reviewed"})
+    setup_complete = await db.onboarding_submissions.count_documents({"status": "setup_complete"})
+    rejected = await db.onboarding_submissions.count_documents({"status": "rejected"})
+    
+    return {
+        "total": total,
+        "pending": pending,
+        "reviewed": reviewed,
+        "setup_complete": setup_complete,
+        "rejected": rejected
+    }
 
 # ================== WEBHOOK PLACEHOLDER ==================
 

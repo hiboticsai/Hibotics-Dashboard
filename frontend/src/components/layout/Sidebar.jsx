@@ -15,7 +15,8 @@ import {
   LogOut,
   Moon,
   Sun,
-  ChevronRight
+  ChevronRight,
+  UserPlus
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
@@ -36,6 +37,7 @@ const Sidebar = ({ portalSlug, isAdmin = false }) => {
 
   const adminNavItems = [
     { icon: LayoutDashboard, label: 'Overview', path: '/admin' },
+    { icon: UserPlus, label: 'Onboarding', path: '/admin/onboarding' },
     { icon: Building2, label: 'Companies', path: '/admin/companies' },
     { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: Bot, label: 'Agents', path: '/admin/agents' },

@@ -20,6 +20,10 @@ import AdminCompanies from './pages/admin/CompaniesPage';
 import AdminUsers from './pages/admin/UsersPage';
 import AdminAgents from './pages/admin/AgentsPage';
 import AdminBilling from './pages/admin/BillingPage';
+import OnboardingManagement from './pages/admin/OnboardingManagement';
+import OnboardingDetail from './pages/admin/OnboardingDetail';
+import OnboardingWizard from './pages/onboarding/OnboardingWizard';
+import OnboardingSuccess from './pages/onboarding/OnboardingSuccess';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -129,6 +133,8 @@ function AppRouter() {
       {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/onboarding" element={<OnboardingWizard />} />
+      <Route path="/onboarding/success" element={<OnboardingSuccess />} />
       
       {/* Home - redirects based on role */}
       <Route path="/" element={<HomeRedirect />} />
@@ -201,6 +207,16 @@ function AppRouter() {
       <Route path="/admin/billing" element={
         <ProtectedRoute requireAdmin>
           <AdminBilling />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/onboarding" element={
+        <ProtectedRoute requireAdmin>
+          <OnboardingManagement />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/onboarding/:submissionId" element={
+        <ProtectedRoute requireAdmin>
+          <OnboardingDetail />
         </ProtectedRoute>
       } />
       
