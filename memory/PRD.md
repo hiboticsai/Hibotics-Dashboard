@@ -150,3 +150,4 @@ Multi-tenant SaaS dashboard for HiBotics AI providing AI voice receptionist anal
 ## Notes
 - ElevenLabs integration uses sample voices with real preview URLs. To enable live voice generation, add `ELEVENLABS_API_KEY` to backend .env
 - Onboarding supports both new users (account created on submit) and logged-in users (account info pre-filled)
+- **Email notifications**: Add `RESEND_API_KEY` to backend .env to enable email notifications to info@hiboticsai.com when new onboarding submissions arrive (get key from https://resend.com)

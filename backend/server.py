@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import asyncio
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Literal
@@ -17,6 +18,10 @@ from io import BytesIO
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Resend email configuration
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+NOTIFICATION_EMAIL = os.environ.get('NOTIFICATION_EMAIL', 'info@hiboticsai.com')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -37,6 +42,98 @@ api_router = APIRouter(prefix="/api")
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# ================== EMAIL NOTIFICATION HELPER ==================
+
+async def send_onboarding_notification_email(submission_data: dict):
+    """Send email notification when new onboarding submission is received"""
+    if not RESEND_API_KEY:
+        logger.warning("RESEND_API_KEY not configured, skipping email notification")
+        return False
+    
+    try:
+        import resend
+        resend.api_key = RESEND_API_KEY
+        
+        # Build email HTML
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); padding: 30px; border-radius: 10px;">
+                <h1 style="color: #00F5D4; margin: 0;">New Onboarding Submission</h1>
+                <p style="color: #888; margin-top: 10px;">A new client has completed the onboarding form</p>
+            </div>
+            
+            <div style="padding: 20px; background: #f9f9f9; border-radius: 10px; margin-top: 20px;">
+                <h2 style="color: #333; border-bottom: 2px solid #00F5D4; padding-bottom: 10px;">Business Details</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #666; width: 40%;">Business Name:</td>
+                        <td style="padding: 8px 0; color: #333; font-weight: bold;">{submission_data.get('business_name', 'N/A')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #666;">Industry:</td>
+                        <td style="padding: 8px 0; color: #333;">{submission_data.get('industry', 'N/A').title()}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #666;">Business Size:</td>
+                        <td style="padding: 8px 0; color: #333;">{submission_data.get('business_size', 'N/A')}</td>
+                    </tr>
+                </table>
+                
+                <h2 style="color: #333; border-bottom: 2px solid #00F5D4; padding-bottom: 10px; margin-top: 20px;">Contact Information</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #666; width: 40%;">Name:</td>
+                        <td style="padding: 8px 0; color: #333; font-weight: bold;">{submission_data.get('name', 'N/A')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #666;">Email:</td>
+                        <td style="padding: 8px 0; color: #333;"><a href="mailto:{submission_data.get('email', '')}" style="color: #00F5D4;">{submission_data.get('email', 'N/A')}</a></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #666;">Website:</td>
+                        <td style="padding: 8px 0; color: #333;">{submission_data.get('website_url') or 'Not provided'}</td>
+                    </tr>
+                </table>
+                
+                <h2 style="color: #333; border-bottom: 2px solid #00F5D4; padding-bottom: 10px; margin-top: 20px;">AI Voice Selection</h2>
+                <p style="color: #333;"><strong>Selected Voice:</strong> {submission_data.get('selected_voice_name', 'N/A')}</p>
+                
+                <h2 style="color: #333; border-bottom: 2px solid #00F5D4; padding-bottom: 10px; margin-top: 20px;">Preferences</h2>
+                <p style="color: #666;"><strong>Business Hours:</strong> {submission_data.get('business_hours') or 'Not specified'}</p>
+                <p style="color: #666;"><strong>Services:</strong> {submission_data.get('services_offered') or 'Not specified'}</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://hibotics-analytics.preview.emergentagent.com/admin/onboarding" 
+                   style="background: #00F5D4; color: #000; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    View in Dashboard
+                </a>
+            </div>
+            
+            <p style="color: #888; font-size: 12px; text-align: center; margin-top: 30px;">
+                This is an automated notification from HiBotics AI Onboarding System
+            </p>
+        </body>
+        </html>
+        """
+        
+        params = {
+            "from": "HiBotics AI <onboarding@resend.dev>",
+            "to": [NOTIFICATION_EMAIL],
+            "subject": f"🎉 New Onboarding: {submission_data.get('business_name', 'New Client')}",
+            "html": html_content
+        }
+        
+        # Run sync SDK in thread to keep FastAPI non-blocking
+        email_result = await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"Onboarding notification email sent: {email_result.get('id')}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send onboarding notification email: {str(e)}")
+        return False
 
 # ================== PYDANTIC MODELS ==================
 
@@ -1641,6 +1738,9 @@ async def submit_onboarding(submission_data: OnboardingSubmissionCreate, request
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.onboarding_discovery_answers.insert_one(answer_doc)
+    
+    # Send email notification to admin
+    await send_onboarding_notification_email(submission_doc)
     
     # Generate JWT token for new users
     token = None
