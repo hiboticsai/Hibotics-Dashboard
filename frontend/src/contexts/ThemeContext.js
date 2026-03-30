@@ -2,6 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext(null);
 
+const HIBOTICS_LOGO_DARK = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png';
+const HIBOTICS_LOGO_LIGHT = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/b0jkqs3r_hibotics_ai_logo_light_bg%20%281%29.png';
+
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -22,11 +25,15 @@ export const ThemeProvider = ({ children, defaultTheme = 'dark' }) => {
   // White-label branding state
   const [branding, setBranding] = useState({
     brandName: 'HiBotics AI',
-    brandLogoUrl: 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png',
+    brandLogoUrlDark: HIBOTICS_LOGO_DARK,
+    brandLogoUrlLight: HIBOTICS_LOGO_LIGHT,
     primaryColor: '#00F5D4',
     accentColor: '#00F5D4',
     showPoweredBy: true
   });
+
+  // Compute the current logo based on theme
+  const currentLogo = theme === 'dark' ? branding.brandLogoUrlDark : branding.brandLogoUrlLight;
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -74,7 +81,10 @@ export const ThemeProvider = ({ children, defaultTheme = 'dark' }) => {
     setTheme,
     toggleTheme,
     isDark: theme === 'dark',
-    branding,
+    branding: {
+      ...branding,
+      brandLogoUrl: currentLogo
+    },
     applyBranding
   };
 

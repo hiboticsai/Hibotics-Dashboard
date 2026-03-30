@@ -13,7 +13,8 @@ export const useTenant = () => {
   return context;
 };
 
-const HIBOTICS_LOGO = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png';
+const HIBOTICS_LOGO_DARK = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png';
+const HIBOTICS_LOGO_LIGHT = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/b0jkqs3r_hibotics_ai_logo_light_bg%20%281%29.png';
 
 export const TenantProvider = ({ children }) => {
   const [company, setCompany] = useState(null);
@@ -40,7 +41,8 @@ export const TenantProvider = ({ children }) => {
       // Apply white-label branding
       applyBranding({
         brandName: companyData.brand_name || companyData.company_name,
-        brandLogoUrl: companyData.brand_logo_url || HIBOTICS_LOGO,
+        brandLogoUrlDark: companyData.brand_logo_url || HIBOTICS_LOGO_DARK,
+        brandLogoUrlLight: companyData.brand_logo_url || HIBOTICS_LOGO_LIGHT,
         primaryColor: companyData.primary_color || '#00F5D4',
         accentColor: companyData.accent_color || '#00F5D4',
         showPoweredBy: companyData.show_powered_by ?? true
@@ -78,7 +80,8 @@ export const TenantProvider = ({ children }) => {
       // Apply white-label branding
       applyBranding({
         brandName: companyData.brand_name || companyData.company_name,
-        brandLogoUrl: companyData.brand_logo_url || HIBOTICS_LOGO,
+        brandLogoUrlDark: companyData.brand_logo_url || HIBOTICS_LOGO_DARK,
+        brandLogoUrlLight: companyData.brand_logo_url || HIBOTICS_LOGO_LIGHT,
         primaryColor: companyData.primary_color || '#00F5D4',
         accentColor: companyData.accent_color || '#00F5D4',
         showPoweredBy: companyData.show_powered_by ?? true
@@ -98,7 +101,8 @@ export const TenantProvider = ({ children }) => {
     // Reset to default branding
     applyBranding({
       brandName: 'HiBotics AI',
-      brandLogoUrl: HIBOTICS_LOGO,
+      brandLogoUrlDark: HIBOTICS_LOGO_DARK,
+      brandLogoUrlLight: HIBOTICS_LOGO_LIGHT,
       primaryColor: '#00F5D4',
       accentColor: '#00F5D4',
       showPoweredBy: true

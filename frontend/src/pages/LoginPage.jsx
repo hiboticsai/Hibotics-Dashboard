@@ -11,6 +11,9 @@ import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 import { Mail, Lock, User, Chrome, Moon, Sun } from 'lucide-react';
 
+const LOGO_DARK = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png';
+const LOGO_LIGHT = 'https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/b0jkqs3r_hibotics_ai_logo_light_bg%20%281%29.png';
+
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
@@ -23,6 +26,8 @@ const LoginPage = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  const currentLogo = theme === 'dark' ? LOGO_DARK : LOGO_LIGHT;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -81,7 +86,7 @@ const LoginPage = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <img 
-                src="https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png"
+                src={currentLogo}
                 alt="HiBotics AI"
                 className="h-14 w-auto"
               />
@@ -140,7 +145,7 @@ const LoginPage = () => {
           {/* Mobile Logo */}
           <div className="flex lg:hidden items-center justify-center mb-8">
             <img 
-              src="https://customer-assets.emergentagent.com/job_hibotics-analytics/artifacts/r3t3k0rb_hibotics_ai_logo_transparent%20%282%29.png"
+              src={currentLogo}
               alt="HiBotics AI"
               className="h-10 w-auto"
             />

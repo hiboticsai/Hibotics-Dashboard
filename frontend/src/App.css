@@ -9,14 +9,25 @@
 .sidebar {
   width: 16rem;
   flex-shrink: 0;
-  background: hsl(var(--card));
-  border-right: 1px solid hsl(var(--border));
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   overflow-y: auto;
   z-index: 40;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  /* Light mode defaults */
+  background: #ffffff !important;
+  border-right: 1px solid #e5e7eb;
+  color: #1f2937;
+}
+
+/* Dark mode sidebar */
+html.dark .sidebar,
+.dark .sidebar {
+  background: #111318 !important;
+  border-right-color: #2d3748;
+  color: #f9fafb;
 }
 
 .main-content {

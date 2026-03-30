@@ -55,25 +55,12 @@ const Sidebar = ({ portalSlug, isAdmin = false }) => {
     <aside className="sidebar flex flex-col h-full" data-testid="sidebar">
       {/* Logo Section */}
       <div className="logo-container">
-        {branding.brandLogoUrl ? (
-          <img 
-            src={branding.brandLogoUrl} 
-            alt={branding.brandName}
-            className="h-8 w-auto"
-            data-testid="brand-logo"
-          />
-        ) : (
-          <div 
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-black font-bold"
-            style={{ backgroundColor: branding.primaryColor }}
-            data-testid="brand-logo-placeholder"
-          >
-            {branding.brandName.charAt(0)}
-          </div>
-        )}
-        <span className="font-semibold text-lg" data-testid="brand-name">
-          {branding.brandName}
-        </span>
+        <img 
+          src={branding.brandLogoUrl} 
+          alt={branding.brandName}
+          className="h-8 w-auto"
+          data-testid="brand-logo"
+        />
       </div>
 
       {/* Navigation */}
